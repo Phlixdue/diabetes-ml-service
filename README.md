@@ -18,4 +18,5 @@ Automated CI/CD: Workflows for linting, testing, building, and publishing releas
 **Running the Service with Docker**
 
 docker pull ghcr.io/phlixdue/diabetes-ml-service:v0.1
+
 docker pull ghcr.io/phlixdue/diabetes-ml-service:v0.2
