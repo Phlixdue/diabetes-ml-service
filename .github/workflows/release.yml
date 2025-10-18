@@ -26,6 +26,10 @@ jobs:
       - name: Extract tag name
         run: echo "TAG_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
 
+      - name: Convert owner to lowercase
+        id: string_utils
+        run: echo "OWNER_LC=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -33,15 +37,15 @@ jobs:
           build-args: MODEL_VERSION=${{ env.TAG_NAME }}
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:${{ env.TAG_NAME }}
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}:${{ env.TAG_NAME }}
+            ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}:latest
 
       - name: Install dependencies for smoke test
         run: pip install requests
 
       - name: Run container smoke test
         run: |
-          docker run -d -p 8000:8000 --name test-container ghcr.io/${{ github.repository }}:${{ env.TAG_NAME }}
+          docker run -d -p 8000:8000 --name test-container ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}:${{ env.TAG_NAME }}
           sleep 10
           python scripts/smoke_test.py
         env:
